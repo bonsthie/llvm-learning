@@ -1,7 +1,38 @@
 declare i32 @baz(...)
 declare void @bar(i32 noundef)
 
-define void @foo(i32 noundef %a, i32 noundef %b) {
+define  void @foo(i32 %a, i32 %b) {
+	%a.addr = alloca i32
+	%b.addr = alloca i32
+	%var = alloca i32
+
+	store i32 %a, ptr %a.addr
+	store i32 %b, ptr %b.addr
+
+	%1 = load i32, ptr %a.addr
+	%2 = load i32, ptr %b.addr
+
+	%add = add i32 %1, %2
+	store i32 %add, ptr %var
+
+	%3 = load i32, ptr %var
+	%cmp = icmp eq i32 %3, 255
+	br i1 %cmp, label %if.then, label %if.end
+
+if.then:
+	%4 = load i32, ptr %var
+	call void @bar(i32 %4)
+	%call = call i32 @baz()
+	store i32 %call, ptr %var
+	br label %if.end
+
+if.end:
+	%i5 = load i32, ptr %var
+	call i32 @bar(i32 %i5)
+	ret void
+}
+
+define void @foo_optimise(i32 noundef %a, i32 noundef %b) {
 entry:
 	%var.addr = alloca i32, align 4
 	%add = add i32 %a, %b
@@ -23,7 +54,7 @@ if.end:
 	ret void
 }
 
-define void @foo_optimise(i32 noundef %a, i32 noundef %b) {
+define void @foo_optimise2(i32 noundef %a, i32 noundef %b) {
 entry:
 	%var = add i32 %a, %b
 	%varcmpeq = icmp eq i32 %var, 255
