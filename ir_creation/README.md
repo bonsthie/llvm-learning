@@ -13,3 +13,8 @@ pick the right value depending on wich block your comming from
 ## tail
 `tail` marks a function call for potential tail call optimization 
 it's valid when it's the last action in a block before a `ret`, `br`, or `unreachable`, and doesn’t require preserving the stack frame.
+
+## callee caller
+
+Caller = the function making the call
+Callee = the function being called
