@@ -1,3 +1,11 @@
+# LLVM IR & MIR Exploration
+
+This repository demonstrates three different ways to lower a simple C function into LLVM’s intermediate representations:
+
+1. **Hand‑written LLVM IR** at 3 optimization levels
+2. **Programmatic IR emission** using the LLVM C++ API (`IRBuilder`)  
+3. **Programmatic MIR emission** using the LLVM Machine IR API (`MachineIRBuilder`)
+
 # llvm ir note
 
 ## noundef 
