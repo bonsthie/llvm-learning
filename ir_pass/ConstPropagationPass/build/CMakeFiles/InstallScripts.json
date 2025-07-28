@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/bonsthie/Documents/code/llvm-learning/ir_pass/ConstPropagationPass/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

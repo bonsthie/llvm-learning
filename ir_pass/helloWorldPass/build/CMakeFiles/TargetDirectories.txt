@@ -1,0 +1,16 @@
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/intrinsics_gen.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/vt_gen.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/omp_gen.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/acc_gen.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/ARMTargetParserTableGen.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/AArch64TargetParserTableGen.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/RISCVTargetParserTableGen.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/HelloWorldPass.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/install-HelloWorldPass.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/install-HelloWorldPass-stripped.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/edit_cache.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/rebuild_cache.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/list_install_components.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/install.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/install/local.dir
+/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/CMakeFiles/install/strip.dir

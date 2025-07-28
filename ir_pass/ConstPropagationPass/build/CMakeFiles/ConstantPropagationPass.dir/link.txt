@@ -1,0 +1,1 @@
+/usr/local/bin/c++ -fPIC  -Wl,--gc-sections -Xlinker --dependency-file=CMakeFiles/ConstantPropagationPass.dir/link.d -shared  -o ConstantPropagationPass.so CMakeFiles/ConstantPropagationPass.dir/ConstantPropagationPass.cpp.o CMakeFiles/ConstantPropagationPass.dir/PluginRegistery.cpp.o  -Wl,-rpath,"\$ORIGIN/../lib:/usr/lib:" /usr/lib/libLLVM.so.20.1
