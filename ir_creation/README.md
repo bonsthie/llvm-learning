@@ -70,6 +70,15 @@ next:
 }
 ```
 
+## backedge
+going back in the CFG (ex: loop going back in the CFG)
+
+##  critical edge
+An edge that goes from a block with multiple successors to a block with multiple predecessors. Such edges are “critical” for many optimizations and are typically split by inserting a new intermediate block.
+
+## Irreducible graph
+A CFG is irreducible if it contains one or more loops with multiple distinct entry points, making it impossible to transform into a hierarchy of single-entry loops.
+
 ## proxy (cost model)
 A proxy cost model is a cheap heuristic that estimates instruction “cost” by counting or lightly weighting IR ops, letting early passes make decisions without invoking the full, target‑accurate backend model.
 

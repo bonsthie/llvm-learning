@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/bonsthie/Documents/code/llvm-learning/ir_pass/helloWorldPass/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

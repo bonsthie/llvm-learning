@@ -1,5 +1,6 @@
 #include "ConstantPropagationPass.h"
-#include "llvm/ADT/APInt.h"
+
+#include <llvm/ADT/APInt.h>
 #include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/IR/Analysis.h>
@@ -18,11 +19,6 @@ static Value *visitBinary(Instruction &Instr, LLVMContext &Ctxt,
                           std::optional<APInt> (*Computation)(const APInt &,
                                                               const APInt &)) {
   assert(isa<BinaryOperator>(Instr) && "This is meant for binary instruction");
-
-  if (auto *BinaryOp = dyn_cast<BinaryOperator>(&Instr)) {
-		if (!BinaryOp->hasNoSignedWrap())
-			return nullptr;
-  }
 
   auto LHS = dyn_cast<ConstantInt>(Instr.getOperand(0));
   auto RHS = dyn_cast<ConstantInt>(Instr.getOperand(1));
