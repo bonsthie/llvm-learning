@@ -3,6 +3,8 @@
 just a repo where i put execie form Quentin Colombet's book [LLVM Code Generation: A deep dive into compiler backend development](https://www.oreilly.com/library/view/llvm-code-generation/9781837637782/)
 i also have note in my [obsidian vault](https://github.com/bonsthie/obsidian-vault) :)
 
+# NOTE
+
 # LLVM IR & MIR Exploration
 
 This repository demonstrates three different ways to lower a simple C function into LLVM’s intermediate representations:
@@ -80,6 +82,7 @@ going back in the CFG (ex: loop going back in the CFG)
 
 ##  critical edge
 An edge that goes from a block with multiple successors to a block with multiple predecessors. Such edges are “critical” for many optimizations and are typically split by inserting a new intermediate block.
+in llvm check if a node is critical with `isCriticalEdge`
 
 ## Irreducible graph
 A CFG is irreducible if it contains one or more loops with multiple distinct entry points, making it impossible to transform into a hierarchy of single-entry loops.
@@ -144,10 +147,36 @@ exitblock:                                   ; exit block: outside the loop
 ## use object and User object
 A User is anything that holds operands (like an instruction), and a Use is one of those operand slots linking the User to a Value.
 
+# LLVM lib/class
 
-# TODO
-* dominace section
-* legality seciont
+## TargetLibraryInfo
+Target library info is used by the vectorize pass to know if the target has a vectorized version of the instruction, to vectorize this part of the code using
+```cpp
+using TargetLoweringInfo::isFunctionVectorizable(StringRef F, const ElementCount &VF)
+```
+
+## DataLayout
+This class is useful to know information on structs, like its size, with
+```cpp
+DL.getTypeSizeInBits(Ty)
+DL.getABITypeAlignment(Ty)
+DL.getTypeAllocSize(Ty)
+```
+
+## BlockFrequencyInfo
+This class provides execution-frequency estimates for LLVM IR basic blocks—useful for guiding IR-level optimizations (e.g., hot-path inlining or block placement)
+```cpp
+// Get the relative frequency of a specific BasicBlock
+BlockFrequency BFI.getBlockFreq(const BasicBlock *BB);
+
+// Get an estimated profile count (absolute hits) if profile data is available
+std::optional<uint64_t> BFI.getBlockProfileCount(const BasicBlock *BB);
+```
+You can see the BlockFrequencyInfo class on the LLVM IR by using the following command:
+```sh
+opt -passes='print<block-freq>' input.ll
+```
+
 
 # PASS Manager
 
@@ -187,3 +216,75 @@ A User is anything that holds operands (like an instruction), and a Use is one o
 * **`-view-cfg-after=<PassName>` / `-view-cfg-before=<PassName>`**
   Launch Graphviz to display the CFG after or before a specific pass.
 
+
+# TablenGen
+## warning 
+the is multiple TablenGen compiler this change the TablenGen backend
+* llvm-tablegen
+* clang-tablegen
+* mlir-tablegen
+
+## Example
+### input
+
+  ```
+// Superclass with arguments and default fields
+class BaseClass<string baseName, int baseValue> {
+  string baseField = baseName;
+  int    baseNum   = baseValue;
+}
+
+// Another superclass for demonstration
+class Flags<int flagBits> {
+  int bits = flagBits;
+}
+
+// Now a subclass using everything
+class MyClass<string name, int size> : BaseClass<name, size>, Flags<size * 2> {
+  string myName = name;
+  int    mySize = size;
+  bit    isActive = 1;
+}
+  ```
+### result
+
+```
+def Example {
+  string baseField = "Widget";
+  int    baseNum   = 8;
+  int    bits      = 16;
+  string myName    = "Widget";
+  int    mySize    = 8;
+  bit    isActive  = 1;
+}
+```
+
+## Types
+
+int : 64 bits int
+bit : bool
+bits<size> : sequence of 0 and 1
+string : string
+list<type> : table of type
+dag : type is a special construct used to encode tree-like data structure
+
+### dag
+```
+class DAGHolder<dag P> {
+  dag pat = P;
+}
+
+def WithDAG : DAGHolder<(mul $a, (add $b, $c))>;
+```
+you can type it too
+```
+(add $lhs, $rhs)   // unnamed operands
+(add GPR:$lhs, GPR:$rhs) // typed and named
+```
+
+## let
+let : let you (aha) redefine a var in the next line `def` or in the next `scope {}`
+
+## operator
+! bang bang into the room !
+ 
