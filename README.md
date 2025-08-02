@@ -80,6 +80,21 @@ i8* addrspace(1)
 - 2	“Constant” memory (read-only)
 - 3	GPU local/shared memory (CUDA)
 
+### attribute
+store attribute groups
+```
+define i32 @bar(ptr noalias nocapture %arg) #0 {
+; ...
+}
+attributes #0 = { noinline noreturn }
+attributes #1 = { "target-cpu"="x86-64" "tune-cpu"="sandybridge" }
+```
+
+### triple
+```
+target triple = "target-vendor-os[-environment]"
+```
+
 # Theorical note
 
 ## SSA 
