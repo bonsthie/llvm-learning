@@ -51,6 +51,34 @@ Callee = the function being called
 - **Machine IR level**:
   - `MachineInstr::getFlag(MIFlag Flag)` with `MIFlag::NoSignedWrap`, `MIFlag::NoUnsignedWrap`, `MIFlag::FmNoNaNs`, etc.
 
+## Type
+Type syntax:
+* Vector: `<N x Ty>`
+* Array: `[N x Ty]`
+* strcut : `%MyStruct = type { i32, float, [4 x i8], {Ty1 , Ty2}}`
+* anonymous/unnamed sturct : `Struct: {Ty1, Ty2, ...}`
+
+### bfloat16 / vs IEEE-754 half bit-f16
+**bfloat**
+*1-bit sign
+*8-bit exponent
+*7-bit mantissa
+
+**IEEE-754 half bit-f16**
+*1-bit sign
+*5-bit exponent
+*10-bit mantissa
+
+### addrspace
+In LLVM IR, address spaces let you distinguish different “kinds” of memory—global vs. local vs. GPU‐shared vs. constant, etc.—at the type level. A pointer type is always in some address space, and by default it uses address space 0.
+```
+i8* addrspace(1)
+<T>* addrspace(N)
+```
+- 0	“Normal” host memory
+- 1	Often “global” device memory
+- 2	“Constant” memory (read-only)
+- 3	GPU local/shared memory (CUDA)
 
 # Theorical note
 
