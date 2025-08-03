@@ -259,6 +259,55 @@ opt -passes='print<block-freq>' input.ll
 * **`-view-cfg-after=<PassName>` / `-view-cfg-before=<PassName>`**
   Launch Graphviz to display the CFG after or before a specific pass.
 
+```sh
+opt --passes='function(print,consthoist,loop(print),
+instcombine<use-loop-info;max-iterations=3>),globaldce' myinput.ll -S -o -
+```
+Function-scoped, identified by function(...):
+* print: Given the scope, this is the registration name of PrintFunctionPass
+* consthoist: The constant hoisting function pass
+* Loop-scoped, identified by loop(...):
+* print: Given the scope, PrintLoopPass
+* instcombine: The instruction combiner pass instantiated with two specific arguments: use-loop-info and max-iterations=3
+Module-scoped:
+* globaldce: The global dead-code elimination pass
+
+## print
+cmd line
+`opt --print-passes`
+Print IR after passes:
+* `Legacy PM: FunctionPass::print()`
+* `New PM: use PreservedAnalyses::all().getChecker<PrinterPass>()`
+
+## check
+Checks IR correctness : `verifyModule()`
+
+## key analysis pass
+`DominatorTree`: For dominance queries (needed for SSA form, LICM, etc.)
+`LoopInfo`: Loop structure of the IR
+`BlockFrequencyInfo`: Heuristic on execution frequency (for hot path optimization)
+`AAResults`:	Alias analysis results
+`TargetTransformInfo`:	Target-dependent cost model (e.g., is mul cheaper than shl)
+`ValueTracking`:	Constant folding, poison, undef analysis
+
+new pass manager
+```cpp
+
+PreservedAnalyses MyPass::run(Function &F, FunctionAnalysisManager &AM) {
+  auto &DT = AM.getResult<DominatorTreeAnalysis>(F);
+  auto &LI = AM.getResult<LoopAnalysis>(F);
+  auto &AA = AM.getResult<AAManager>(F);
+  // Use DT, LI, AA for analysis
+  return PreservedAnalyses::all();
+}
+```
+
+## key passes
+Key passes:
+* `InstCombine`: constant folding, pattern simplification (always useful).
+* `mem2reg`: converts allocas to SSA form (necessary for many optimizations).
+* `LCSSA`: prepares loops for safe transformations
+
 
 # TablenGen
 ## warning 
@@ -331,3 +380,4 @@ let : let you (aha) redefine a var in the next line `def` or in the next `scope 
 ## operator
 ! bang bang into the room !
  
+
