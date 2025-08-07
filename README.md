@@ -259,6 +259,7 @@ opt -passes='print<block-freq>' input.ll
 * **`-view-cfg-after=<PassName>` / `-view-cfg-before=<PassName>`**
   Launch Graphviz to display the CFG after or before a specific pass.
 
+how to write a advenced `--passes` cmd:
 ```sh
 opt --passes='function(print,consthoist,loop(print),
 instcombine<use-loop-info;max-iterations=3>),globaldce' myinput.ll -S -o -
@@ -319,7 +320,7 @@ the is multiple TablenGen compiler this change the TablenGen backend
 ## Example
 ### input
 
-  ```
+```td
 // Superclass with arguments and default fields
 class BaseClass<string baseName, int baseValue> {
   string baseField = baseName;
@@ -340,7 +341,7 @@ class MyClass<string name, int size> : BaseClass<name, size>, Flags<size * 2> {
   ```
 ### result
 
-```
+```td
 def Example {
   string baseField = "Widget";
   int    baseNum   = 8;
@@ -361,7 +362,7 @@ list<type> : table of type
 dag : type is a special construct used to encode tree-like data structure
 
 ### dag
-```
+```td
 class DAGHolder<dag P> {
   dag pat = P;
 }
@@ -369,7 +370,7 @@ class DAGHolder<dag P> {
 def WithDAG : DAGHolder<(mul $a, (add $b, $c))>;
 ```
 you can type it too
-```
+```td
 (add $lhs, $rhs)   // unnamed operands
 (add GPR:$lhs, GPR:$rhs) // typed and named
 ```
@@ -381,3 +382,87 @@ let : let you (aha) redefine a var in the next line `def` or in the next `scope 
 ! bang bang into the room !
  
 
+# debug
+
+## print cmd line
+* `-print-before-all`
+* `-print-after-all`
+* `-print-before=PassName1[,PassName2]*`
+* `-print-after=PassName1[,PassName2]*`
+
+with clang u can use `-mllvm` to active opt command
+```sh
+clang -O3 -S input.c -o -mllvm -print-after-all
+```
+
+## print debug log
+activate debug log of a pass
+
+* `-debug` 
+* `-debug-only=PassName1[,PassNAme2]*` 
+
+exampple :
+```sh
+opt -passes=slp-vectorizer -debug-only=SLP input.ll -S –o output.ll
+```
+
+the debug name is set in the standard by de define `DEBUG_TYPE`
+
+### how to setup debug
+* include `llvm/Support/Debug.h`
+* define `DEBUG_TYPE`
+* use the `LLVM_DEBUG` macro to print
+
+example :
+```cpp
+#include "llvm/Support/Debug.h"
+#define DEBUG_TYPE "my-pass"
+...
+LLVM_DEBUG(dbgs() << "Processing: " << Instr << "\n");
+```
+
+## stats
+statistics offer us a condensed way to know whether a pass was triggered 
+```sh
+clang -o out.s in.c -S -mllvm –stats
+<snip>
+    1 prologepilog - Number of functions seen in PEI
+    2 regalloc - Number of copies coalesced
+```
+
+### setup stats
+
+* include `llvm/ADT/Statistics.h`
+* use the `STATISTIC` macro
+    * NAME: The name of the variable for your counter.
+    * DESC: The description of what this counter holds. This information will be printed in the final report
+
+
+## llvm-extract
+extract a function or a part of a function by keeping the code valid
+```sh
+llvm-extract -S -func=foo -o - input.ll # function
+llvm-extract -S -func=foo:bb2 -o - input.ll # basic block
+```
+
+## llvm-reduce 
+take a file in input a a small bash script and reduce the ir while the return of this bash script is still valid
+
+has_bfi.sh
+```sh
+#!/bin/bash
+llc $@ -o - | grep 'bfi'
+exit $?
+```
+
+```sh
+llvm-reduce --test=has_bfi.sh input.ll
+```
+
+old version of this is `bugpoint` (note the output of the sh script is the inverse of llvm-reduce)
+```
+bugpoint --compile-command=./has_not_bfi.sh --run-llc --compile-custom input.ll
+```
+
+
+## need a part on lldb but i'm to lazy right now
