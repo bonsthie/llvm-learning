@@ -5,13 +5,16 @@ i also have note in my [obsidian vault](https://github.com/bonsthie/obsidian-vau
 
 # NOTE
 
-# LLVM IR & MIR Exploration
+# LLVM Exploration
 
 This repository demonstrates three different ways to lower a simple C function into LLVM’s intermediate representations:
 
 1. **Hand‑written LLVM IR** at 3 optimization levels
 2. **Programmatic IR emission** using the LLVM C++ API (`IRBuilder`)  
 3. **Programmatic MIR emission** using the LLVM Machine IR API (`MachineIRBuilder`)
+4. **Pass Creatation** creation of simple pass like `Constant Folding`
+5. **TablenGen** : creation of simple TableGen example
+6. **backend** this is fully in the [bonsthie/llvm-project `H2BLB-custom-backend branch`](https://github.com/bonsthie/llvm-project/tree/H2BLB-custom-backend)
 
 # llvm ir note
 
@@ -94,6 +97,73 @@ attributes #1 = { "target-cpu"="x86-64" "tune-cpu"="sandybridge" }
 ```
 target triple = "target-vendor-os[-environment]"
 ```
+
+# mir note
+In LLVM IR every basic block must end with exactly one terminator; in MIR a MachineBasicBlock may end with none (fall-through) or several (be careful with linear order)
+Linear order matters: moving bb.3 between bb.1 and bb.2 without adding a terminator changes semantics due to fall-through.
+
+ textual MIR (.mir) and it’s YAML-based.
+```yaml
+--- 
+# optional IR section (can be dropped when shrinking)
+... 
+--- 
+name: foo
+tracksRegLiveness: true
+body: |
+  bb.0:
+    successors: %bb.1
+    %0:gpr32 = COPY %x0
+    $eflags = implicit-def
+    %1:gpr32 = ADDWrr %0, %2 :: (load 4 from %stack.0)
+  bb.1:
+    RET
+```
+
+* explicit reg : part of the operand (ex : `add %1, %2`)
+* implicit reg are not part of the operand marked with the `implicit`/`implicit-def` key word (ex : `cmpeq %1, %2` -> result goes here `$eflags`)
+
+
+## MIR vs MC Classes (LLVM Code Generation p. 309–338)
+
+**MIR Classes:**
+
+1. `MachineFunction`
+2. `MachineBasicBlock`
+3. `MachineInstr`
+4. `MachineOperand`
+5. `MachineMemOperand`
+6. `MachineRegisterInfo`
+7. `LiveRegUnits`
+8. `TargetRegisterInfo`
+9. `TargetRegisterClass`
+
+**MC Classes:**
+
+1. `MCInst`
+2. `MCOperand`
+3. `MCRegisterInfo`
+4. `MCInstrDesc`
+5. `MCInstrInfo`
+6. `MCAsmInfo`
+7. `MCSubtargetInfo`
+
+## pipeline
+```sh
+LLVM IR (or .bc) ──select──► MIR (MachineInstr, CFG) ──lower/print──► MC (MCInst stream) ──encode──► machine code bytes (.o/.exe)
+```
+* **MIR / Machine*** = program-level machine IR with a real CFG: MachineFunction → MachineBasicBlock → MachineInstr → MachineOperand
+* **MC** = instruction-level representation for `printing`/`encoding`: `MCInst` → `MCOperand` plus `descriptors`/`encoders`/`streamers`. just a stream of instructions that an assembler/encoder can turn into bytes (or disassemble back).
+> note : Important correction: MC is not “an interpretation of bitcode.” Bitcode is the serialized form of LLVM IR (much earlier).
+
+## constraint of an operant
+Operand constraints are defined in the TableGen `.td` files for the target’s instructions.
+They tell the backend what kind of register or value each operand can be, and sometimes how operands relate to each other.
+
+* `Register class constraint` – "must be `GR32`" → forces 32-bit regs only.
+* `Tied operand constraint` – "`Op0` = `Op1`" → the def reuses the same register as the first use.
+* `Fixed register constraint` – "must be `$eax`" → hardcoded ABI/hardware reg.
+* `Subregister constraint` – "must be a sub_32 of a 64-bit reg".
 
 # Theorical note
 
@@ -463,6 +533,18 @@ old version of this is `bugpoint` (note the output of the sh script is the inver
 ```
 bugpoint --compile-command=./has_not_bfi.sh --run-llc --compile-custom input.ll
 ```
+### mir
+for mir reduce work but you can also
+```sh
+llc input.ll -simplify-mir
+```
+
+## exec a pass
+```sh
+llc --run-pass=opt input.mir -o -
+```
+
+
 
 
 ## need a part on lldb but i'm to lazy right now
